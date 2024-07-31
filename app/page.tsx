@@ -30,9 +30,9 @@ init({
     rpcUrl: v.rpcUrl,
   })),
   appMetadata: {
-    name: "Cartesi-Privado Verifier",
+    name: "D OCR",
     icon: "<svg>CarteSign<svg/>",
-    description: "Cartesi Dapp with PrivadoID Verification",
+    description: "Cartesi Dapp decentralized document scanning feature",
     recommendedInjectedWallets: [
       { name: "MetaMask", url: "https://metamask.io" },
     ],
@@ -55,7 +55,7 @@ export default function Home() {
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain();
   const [notices, setNotices] = useState<any>([]);
   let apiURL = "http://localhost:8080/graphql";
-  const [response, setResponse] = useState("");
+  const [response, setResponse] = useState(undefined);
   if (connectedChain) {
     if (config[connectedChain.id]?.graphqlAPIURL) {
       apiURL = `${config[connectedChain.id].graphqlAPIURL}/graphql`;
@@ -111,6 +111,7 @@ export default function Home() {
       Notices[Notices.length > 0 ? Notices.length - 1 : 0].payload
     );
     console.log("result is", result.id, result.result);
+    setResponse(result.result);
   };
 
   const handleChange = (e: any) => {
@@ -159,7 +160,7 @@ export default function Home() {
     e.preventDefault();
     const { name, age, dob, uid, file } = formData;
 
-    if (!name || !age || !dob || !uid || !file) {
+    if (!file) {
       alert("Please fill out all fields.");
       return;
     }
@@ -188,31 +189,74 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-400 to-pink-200 flex flex-col items-center justify-center">
-      <div className="absolute top-0 left-0 m-4">
-        <img src="/logo.png" alt="Logo" className="h-16 w-16" />
+    <div className="min-h-screen  bg-gradient-to-r flex flex-col text-slate-900 from-purple-300 via-pink-400 to-red-300  dark:from-purple-700 dark:via-pink-700 dark:to-red-700">
+      <div className="flex items-center justify-center flex-col">
+        <Head>
+          <title className="text-6xl text-slate-800">D OCR </title>
+        </Head>
+        <div className="flex flex-col justify-center px-2">
+          <h1 className="text-4xl text-center text-slate-800">D OCR </h1>
+
+          <Network />
+          <div className="absolute mt-5 top-4 left-4 w-16 h-16 bg-gray-300 rounded-full">
+            {" "}
+            <img
+              className=" rounded-full "
+              src="https://jjhbk.github.io/assets/images/cartesign_logo.png"
+            />
+          </div>
+          <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+            <div className="flex justify-start mb-6">
+              <div className="w-16 h-16 bg-gray-300 rounded-full">
+                {" "}
+                <img
+                  className=" rounded-full "
+                  src="https://jjhbk.github.io/assets/images/cartesign_logo.png"
+                />
+              </div>
+            </div>
+            <h1 className="text-2xl text-slate-700 font-bold mb-4 text-center">
+              D OCR
+            </h1>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="file"
+                >
+                  Upload File
+                </label>
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  onChange={handleChange}
+                  className="shadow  h-full appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <button
+                  type="submit"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-      <div className="flex flex-col items-center">
-        <label
-          htmlFor="file-upload"
-          className="h-72 w-72 rounded-full border-4 border-dashed border-white flex items-center justify-center text-white cursor-pointer mb-4"
-        >
-          <input
-            id="file-upload"
-            type="file"
-            className="hidden"
-            onChange={handleChange}
-          />
-          {formData.file ? formData.file : "Upload Image"}
-        </label>
-        <button
-          onClick={handleSubmit}
-          className="bg-white text-gray-800 py-2 px-4 rounded-full shadow-md"
-        >
-          Send to API
-        </button>
-      </div>
-      {response && <div className="mt-4 text-white">{response}</div>}
+      {
+        <div className="flex flex-col justify-center items-center">
+          <h1 className="flex text-center mt-10 text-2xl">Scanned Result</h1>
+          <div className="bg-slate-200 mt-6 mx-32 h-80 overflow-y-scroll border-slate-400 p-4 rounded-lg">
+            <p className="text-black mx-5 whitespace-break-spaces">
+              {response}
+            </p>
+          </div>
+        </div>
+      }
     </div>
   );
 }
