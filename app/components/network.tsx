@@ -6,11 +6,11 @@ export const Network: FC = () => {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain();
   const [dappAddress, setDappAddress] = useState<string>(
-    process.env.NEXT_PUBLIC_DAPP_AMOY_ADDRESS
-      ? process.env.NEXT_PUBLIC_DAPP_AMOY_ADDRESS
+    process.env.NEXT_PUBLIC_DAPP_ARB_SEPOLIA_ADDRESS
+      ? process.env.NEXT_PUBLIC_DAPP_ARB_SEPOLIA_ADDRESS
       : "0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e"
   );
-  console.log(process.env.NEXT_PUBLIC_DAPP_AMOY_ADDRESS);
+  console.log(process.env.NEXT_PUBLIC_DAPP_ARB_SEPOLIA_ADDRESS);
   return (
     <div className="flex p-5">
       {!wallet && (

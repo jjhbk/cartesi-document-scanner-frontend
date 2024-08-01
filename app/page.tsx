@@ -2,7 +2,7 @@
 import { advanceInput, getNotice, getNotices } from "@mugen-builders/client";
 import { ethers } from "ethers";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import injectedModule from "@web3-onboard/injected-wallets";
 import { init, useSetChain, useWallets } from "@web3-onboard/react";
 import { v4 as uuidv4 } from "uuid";
@@ -48,8 +48,8 @@ export default function Home() {
     file: "",
   });
   const [dappAddress, setDappAddress] = useState<string>(
-    process.env.NEXT_PUBLIC_DAPP_AMOY_ADDRESS
-      ? process.env.NEXT_PUBLIC_DAPP_AMOY_ADDRESS
+    process.env.NEXT_PUBLIC_DAPP_ARB_SEPOLIA_ADDRESS
+      ? process.env.NEXT_PUBLIC_DAPP_ARB_SEPOLIA_ADDRESS
       : "0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e"
   );
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain();
@@ -66,6 +66,9 @@ export default function Home() {
       return;
     }
   }
+  useEffect(() => {
+    console.log("reloading", response, notices);
+  }, [response]);
   const getAllNotices = async () => {
     console.log("getting notices");
     let Notices: any = await getNotices(apiURL);
@@ -198,11 +201,11 @@ export default function Home() {
           <h1 className="text-4xl text-center text-slate-800">D OCR </h1>
 
           <Network />
-          <div className="absolute mt-5 top-4 left-4 w-16 h-16 bg-gray-300 rounded-full">
+          <div className="absolute mt-5 top-4 left-4 w-40 h-40 bg-gray-300 rounded-full">
             {" "}
             <img
               className=" rounded-full "
-              src="https://jjhbk.github.io/assets/images/cartesign_logo.png"
+              src="https://jjhbk.github.io/assets/images/docr.png"
             />
           </div>
           <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -211,7 +214,7 @@ export default function Home() {
                 {" "}
                 <img
                   className=" rounded-full "
-                  src="https://jjhbk.github.io/assets/images/cartesign_logo.png"
+                  src="https://jjhbk.github.io/assets/images/docr.png"
                 />
               </div>
             </div>
@@ -247,7 +250,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      {
+      {response && (
         <div className="flex flex-col justify-center items-center">
           <h1 className="flex text-center mt-10 text-2xl">Scanned Result</h1>
           <div className="bg-slate-200 mt-6 mx-32 h-80 overflow-y-scroll border-slate-400 p-4 rounded-lg">
@@ -256,7 +259,7 @@ export default function Home() {
             </p>
           </div>
         </div>
-      }
+      )}
     </div>
   );
 }
