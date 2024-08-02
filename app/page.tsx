@@ -18,6 +18,7 @@ import { InspectCall } from "./exports";
 import { Network } from "./components/network";
 import { hexToString } from "viem";
 import { constants } from "vm";
+import imageCompression from "browser-image-compression";
 const config: any = configFile;
 const injected = injectedModule();
 
@@ -53,6 +54,7 @@ export default function Home() {
       : "0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e"
   );
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain();
+  const [connectedWallet] = useWallets();
   const [notices, setNotices] = useState<any>([]);
   let apiURL = "http://localhost:8080/graphql";
   const [response, setResponse] = useState(undefined);
@@ -66,9 +68,7 @@ export default function Home() {
       return;
     }
   }
-  useEffect(() => {
-    console.log("reloading", response, notices);
-  }, [response]);
+
   const getAllNotices = async () => {
     console.log("getting notices");
     let Notices: any = await getNotices(apiURL);
@@ -117,24 +117,42 @@ export default function Home() {
     setResponse(result.result);
   };
 
-  const handleChange = (e: any) => {
+  const handleChange = async (e: any) => {
     let { name, value, files } = e.target;
     console.log(name, value, files);
-
+    const options = {
+      maxSizeKB: 200,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
     if (name == "file") {
       let reader = new FileReader();
-      reader.readAsDataURL(files[0]);
-      reader.onload = function () {
-        //me.modelvalue = reader.result;
-        const _value = JSON.stringify(reader.result?.toString().split(",")[1]);
-        setFormData({
-          ...formData,
-          [name]: _value,
-        });
-        console.log(String(_value));
+      try {
+        const compressedFile = await imageCompression(files[0], options);
+        console.log(
+          "compressedFile instanceof Blob",
+          compressedFile instanceof Blob
+        ); // true
+        console.log(
+          `compressedFile size ${compressedFile.size / 1024 / 1024} MB`
+        ); // smaller than maxSizeMB
 
-        return;
-      };
+        reader.readAsDataURL(compressedFile);
+        reader.onload = function () {
+          const _value = JSON.stringify(
+            reader.result?.toString().split(",")[1]
+          );
+          setFormData({
+            ...formData,
+            [name]: _value,
+          });
+          console.log(String(_value));
+
+          return;
+        };
+      } catch (error) {
+        console.log(error);
+      }
       reader.onerror = function (error) {
         console.log("Error: ", error);
       };
@@ -173,10 +191,10 @@ export default function Home() {
     const result = await addCustomInput(input);
     console.log(result);
     setTimeout(async () => {
+      console.log("getting notices");
       await getAllNotices();
     }, 10000);
   };
-  const [connectedWallet] = useWallets();
   const addCustomInput = async (input: any): Promise<any> => {
     const provider = new ethers.providers.Web3Provider(
       connectedWallet.provider
