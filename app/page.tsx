@@ -122,7 +122,7 @@ export default function Home() {
     console.log(name, value, files);
     const options = {
       maxSizeKB: 200,
-      maxWidthOrHeight: 1920,
+      maxWidthOrHeight: 800,
       useWebWorker: true,
     };
     if (name == "file") {
@@ -193,7 +193,7 @@ export default function Home() {
     setTimeout(async () => {
       console.log("getting notices");
       await getAllNotices();
-    }, 10000);
+    }, 20000);
   };
   const addCustomInput = async (input: any): Promise<any> => {
     const provider = new ethers.providers.Web3Provider(
